@@ -64,6 +64,10 @@ jobs:
           mkdir -p ~/.azure/bin
           ln -sf /usr/local/bin/bicep ~/.azure/bin/bicep
 
+      - name: Set environment name to lowercase
+        shell: bash
+        run: echo "ENV_LOWER=$(echo ${{ matrix.environment }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Validate Bicep template
         uses: azure/arm-deploy@v2
         with:
@@ -71,7 +75,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ toLower(matrix.environment) }}.main.bicepparam
+          parameters: ./infra/${{ env.ENV_LOWER }}.main.bicepparam
           deploymentMode: Validate
           failOnStdErr: false
 
@@ -110,6 +114,10 @@ jobs:
           mkdir -p ~/.azure/bin
           ln -sf /usr/local/bin/bicep ~/.azure/bin/bicep
 
+      - name: Set environment name to lowercase
+        shell: bash
+        run: echo "ENV_LOWER=$(echo ${{ matrix.environment }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Run What-If
         id: whatif
         uses: azure/arm-deploy@v2
@@ -118,7 +126,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ toLower(matrix.environment) }}.main.bicepparam
+          parameters: ./infra/${{ env.ENV_LOWER }}.main.bicepparam
           deploymentMode: Incremental
           additionalArguments: '--what-if --what-if-result-format FullResourcePayloads'
           failOnStdErr: false
@@ -361,6 +369,10 @@ jobs:
           mkdir -p ~/.azure/bin
           ln -sf /usr/local/bin/bicep ~/.azure/bin/bicep
 
+      - name: Set environment name to lowercase
+        shell: bash
+        run: echo "ENV_LOWER=$(echo ${{ github.event.inputs.environment }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Deploy to Azure
         id: deploy
         uses: azure/arm-deploy@v2
@@ -369,7 +381,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ toLower(github.event.inputs.environment) }}.main.bicepparam
+          parameters: ./infra/${{ env.ENV_LOWER }}.main.bicepparam
           deploymentName: 'foundry-${{ github.event.inputs.environment }}-${{ github.run_number }}'
           failOnStdErr: false
 
