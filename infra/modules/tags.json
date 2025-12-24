@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "7279124806218399666"
+    }
+  },
+  "parameters": {
+    "defaultTags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Default tags to apply"
+      }
+    },
+    "customTags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Custom tags to merge with defaults"
+      }
+    }
+  },
+  "resources": [],
+  "outputs": {
+    "tags": {
+      "type": "object",
+      "value": "[union(parameters('defaultTags'), parameters('customTags'))]"
+    }
+  }
+}

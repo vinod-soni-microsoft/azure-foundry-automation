@@ -1,0 +1,48 @@
+# Azure Bicep
+*.parameters.json
+.env
+.env.local
+
+# Build outputs
+bin/
+obj/
+out/
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IDEs
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Azure Developer CLI - Allow .env files but ignore other azd artifacts
+.azure/**/*
+!.azure/*/
+!.azure/*/.env
+.azure/*/.env
+
+# Terraform (if mixed IaC)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Secrets
+secrets.json
+*.key
+*.pem
+*.pfx
+*.p12
+
+# Logs
+*.log
+logs/
+
+# Node modules (if using Bicep CLI via npm)
+node_modules/

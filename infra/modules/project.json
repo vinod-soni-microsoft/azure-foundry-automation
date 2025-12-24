@@ -1,0 +1,101 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "6447861497824427093"
+    }
+  },
+  "parameters": {
+    "projectName": {
+      "type": "string",
+      "metadata": {
+        "description": "Project name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure region"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Resource tags"
+      }
+    },
+    "hubId": {
+      "type": "string",
+      "metadata": {
+        "description": "Foundry hub resource ID"
+      }
+    },
+    "friendlyName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Friendly name for the project"
+      }
+    },
+    "projectDescription": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Description of the project"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2024-04-01-preview",
+      "name": "[parameters('projectName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "kind": "Project",
+      "properties": {
+        "friendlyName": "[if(not(empty(parameters('friendlyName'))), parameters('friendlyName'), parameters('projectName'))]",
+        "description": "[parameters('projectDescription')]",
+        "hubResourceId": "[parameters('hubId')]",
+        "publicNetworkAccess": "Enabled"
+      }
+    }
+  ],
+  "outputs": {
+    "id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName'))]",
+      "metadata": {
+        "description": "Project resource ID"
+      }
+    },
+    "name": {
+      "type": "string",
+      "value": "[parameters('projectName')]",
+      "metadata": {
+        "description": "Project name"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview', 'full').identity.principalId]",
+      "metadata": {
+        "description": "System-assigned managed identity principal ID"
+      }
+    },
+    "discoveryUrl": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview').discoveryUrl]",
+      "metadata": {
+        "description": "Project discovery URL"
+      }
+    }
+  }
+}

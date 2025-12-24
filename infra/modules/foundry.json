@@ -1,0 +1,175 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "2408855499061086957"
+    }
+  },
+  "parameters": {
+    "foundryName": {
+      "type": "string",
+      "metadata": {
+        "description": "Foundry hub name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure region"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Resource tags"
+      }
+    },
+    "keyVaultId": {
+      "type": "string",
+      "metadata": {
+        "description": "Key Vault resource ID"
+      }
+    },
+    "storageAccountId": {
+      "type": "string",
+      "metadata": {
+        "description": "Storage account resource ID"
+      }
+    },
+    "applicationInsightsId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Application Insights resource ID (optional)"
+      }
+    },
+    "containerRegistryId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Container Registry resource ID (optional)"
+      }
+    },
+    "aiServicesName": {
+      "type": "string",
+      "metadata": {
+        "description": "AI Services account name for connection"
+      }
+    },
+    "aiServicesId": {
+      "type": "string",
+      "metadata": {
+        "description": "AI Services resource ID"
+      }
+    },
+    "aiServicesEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "AI Services endpoint"
+      }
+    },
+    "connectionAuthType": {
+      "type": "string",
+      "defaultValue": "AAD",
+      "allowedValues": [
+        "ApiKey",
+        "AAD"
+      ],
+      "metadata": {
+        "description": "Connection authentication type"
+      }
+    },
+    "friendlyName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Friendly name for the hub"
+      }
+    },
+    "hubDescription": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Description of the hub"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/connections",
+      "apiVersion": "2024-04-01-preview",
+      "name": "[format('{0}/{1}', parameters('foundryName'), toLower(format('{0}-connection', parameters('aiServicesName'))))]",
+      "properties": {
+        "category": "AIServices",
+        "target": "[parameters('aiServicesEndpoint')]",
+        "authType": "[parameters('connectionAuthType')]",
+        "isSharedToAll": true,
+        "metadata": {
+          "ApiType": "Azure",
+          "ResourceId": "[parameters('aiServicesId')]"
+        },
+        "credentials": "[if(equals(parameters('connectionAuthType'), 'ApiKey'), createObject('key', listKeys(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview').key1), null())]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2024-04-01-preview",
+      "name": "[parameters('foundryName')]",
+      "location": "[parameters('location')]",
+      "tags": "[parameters('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "kind": "Hub",
+      "properties": {
+        "friendlyName": "[if(not(empty(parameters('friendlyName'))), parameters('friendlyName'), parameters('foundryName'))]",
+        "description": "[parameters('hubDescription')]",
+        "keyVault": "[parameters('keyVaultId')]",
+        "storageAccount": "[parameters('storageAccountId')]",
+        "applicationInsights": "[if(not(empty(parameters('applicationInsightsId'))), parameters('applicationInsightsId'), null())]",
+        "containerRegistry": "[if(not(empty(parameters('containerRegistryId'))), parameters('containerRegistryId'), null())]",
+        "publicNetworkAccess": "Enabled",
+        "managedNetwork": {
+          "isolationMode": "Disabled"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "id": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName'))]",
+      "metadata": {
+        "description": "Foundry hub resource ID"
+      }
+    },
+    "name": {
+      "type": "string",
+      "value": "[parameters('foundryName')]",
+      "metadata": {
+        "description": "Foundry hub name"
+      }
+    },
+    "principalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview', 'full').identity.principalId]",
+      "metadata": {
+        "description": "System-assigned managed identity principal ID"
+      }
+    },
+    "discoveryUrl": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview').discoveryUrl]",
+      "metadata": {
+        "description": "Foundry hub discovery URL"
+      }
+    }
+  }
+}

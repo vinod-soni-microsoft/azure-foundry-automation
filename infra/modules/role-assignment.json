@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.15.31.15270",
+      "templateHash": "7781765435349682441"
+    }
+  },
+  "parameters": {
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Principal (object) ID to assign the role to"
+      }
+    },
+    "roleDefinitionId": {
+      "type": "string",
+      "metadata": {
+        "description": "Role definition ID (GUID)"
+      }
+    },
+    "principalType": {
+      "type": "string",
+      "defaultValue": "ServicePrincipal",
+      "allowedValues": [
+        "User",
+        "Group",
+        "ServicePrincipal",
+        "ForeignGroup"
+      ],
+      "metadata": {
+        "description": "Principal type"
+      }
+    },
+    "resourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource ID to assign the role at"
+      }
+    }
+  },
+  "variables": {
+    "resourceIdParts": "[split(parameters('resourceId'), '/')]",
+    "resourceType": "[format('{0}/{1}', variables('resourceIdParts')[6], variables('resourceIdParts')[7])]",
+    "resourceName": "[variables('resourceIdParts')[8]]"
+  },
+  "resources": [
+    {
+      "condition": "[equals(variables('resourceType'), 'Microsoft.KeyVault/vaults')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[format('Microsoft.KeyVault/vaults/{0}', variables('resourceName'))]",
+      "name": "[guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+        "principalId": "[parameters('principalId')]",
+        "principalType": "[parameters('principalType')]"
+      }
+    },
+    {
+      "condition": "[equals(variables('resourceType'), 'Microsoft.Storage/storageAccounts')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', variables('resourceName'))]",
+      "name": "[guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+        "principalId": "[parameters('principalId')]",
+        "principalType": "[parameters('principalType')]"
+      }
+    },
+    {
+      "condition": "[equals(variables('resourceType'), 'Microsoft.CognitiveServices/accounts')]",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', variables('resourceName'))]",
+      "name": "[guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+        "principalId": "[parameters('principalId')]",
+        "principalType": "[parameters('principalType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "id": {
+      "type": "string",
+      "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]",
+      "metadata": {
+        "description": "Role assignment ID"
+      }
+    }
+  }
+}
