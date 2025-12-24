@@ -20,9 +20,9 @@ on:
         required: true
         type: choice
         options:
-          - dev
-          - stg
-          - prod
+          - DEV
+          - STG
+          - PROD
 
 permissions:
   id-token: write
@@ -36,7 +36,7 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
-        environment: [dev, stg, prod]
+        environment: [DEV, STG, PROD]
     environment: ${{ matrix.environment }}
     
     steps:
@@ -71,7 +71,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ matrix.environment }}.main.bicepparam
+          parameters: ./infra/${{ toLower(matrix.environment) }}.main.bicepparam
           deploymentMode: Validate
           failOnStdErr: false
 
@@ -82,7 +82,7 @@ jobs:
     if: github.event_name == 'pull_request'
     strategy:
       matrix:
-        environment: [dev, stg, prod]
+        environment: [DEV, STG, PROD]
     environment: ${{ matrix.environment }}
     
     steps:
@@ -118,7 +118,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ matrix.environment }}.main.bicepparam
+          parameters: ./infra/${{ toLower(matrix.environment) }}.main.bicepparam
           deploymentMode: Incremental
           additionalArguments: '--what-if --what-if-result-format FullResourcePayloads'
           failOnStdErr: false
@@ -166,7 +166,7 @@ jobs:
     needs: validate
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
-      name: dev
+      name: DEV
       url: https://portal.azure.com
     
     steps:
@@ -222,7 +222,7 @@ jobs:
     needs: deploy-dev
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
-      name: stg
+      name: STG
       url: https://portal.azure.com
     
     steps:
@@ -278,7 +278,7 @@ jobs:
     needs: deploy-stg
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
-      name: prod
+      name: PROD
       url: https://portal.azure.com
     
     steps:
@@ -369,7 +369,7 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           region: ${{ vars.AZURE_LOCATION || 'eastus' }}
           template: ./infra/main.bicep
-          parameters: ./infra/${{ github.event.inputs.environment }}.main.bicepparam
+          parameters: ./infra/${{ toLower(github.event.inputs.environment) }}.main.bicepparam
           deploymentName: 'foundry-${{ github.event.inputs.environment }}-${{ github.run_number }}'
           failOnStdErr: false
 
