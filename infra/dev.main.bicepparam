@@ -20,7 +20,7 @@ param projects = [
   }
 ]
 
-param kvName = 'devaifkv2026c'
+param kvName = 'devaifkv2026d'
 param storageName = 'devaifstor2026c'
 param resourceGroupName = 'dev-aif-foundry-rg'
 

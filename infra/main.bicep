@@ -92,8 +92,8 @@ module keyVault 'modules/kv.bicep' = {
     location: location
     tags: mergedTags
     enableRbacAuthorization: true
-    enablePurgeProtection: true
-    softDeleteRetentionInDays: 90
+    enablePurgeProtection: false // Disabled for dev to allow cleanup
+    softDeleteRetentionInDays: 7  // Minimum retention for dev
   }
 }
 
