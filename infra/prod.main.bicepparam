@@ -72,3 +72,11 @@ param aiServicesDeployments = [
 
 // Application Insights
 param appInsightsName = 'prodaifappinsights001'
+
+// Speech Services with Voice Live API
+param deploySpeechServices = true
+param speechServicesName = 'prodaifspeech001'
+param speechServicesSubdomain = 'prodaifspeech001'
+
+// NOTE: AI Agents use Basic Agent Setup (Microsoft-managed infrastructure)
+// Create agents via Azure AI Foundry portal or SDK - no Bicep deployment needed

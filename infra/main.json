@@ -4,15 +4,15 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.15.31.15270",
-      "templateHash": "263863731888614843"
+      "version": "0.39.26.7824",
+      "templateHash": "7327012964754039317"
     }
   },
   "parameters": {
     "namePrefix": {
       "type": "string",
-      "maxLength": 10,
       "minLength": 2,
+      "maxLength": 10,
       "metadata": {
         "description": "Name prefix for resources"
       }
@@ -93,6 +93,41 @@
       "metadata": {
         "description": "Resource group name"
       }
+    },
+    "deployServiceNowAgent": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy ServiceNow AI Agent capability host"
+      }
+    },
+    "serviceNowAgentDescription": {
+      "type": "string",
+      "defaultValue": "ServiceNow AI Agent for automated service management",
+      "metadata": {
+        "description": "ServiceNow Agent description"
+      }
+    },
+    "deploySpeechServices": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Deploy Speech Services with Voice Live API"
+      }
+    },
+    "speechServicesName": {
+      "type": "string",
+      "defaultValue": "[format('{0}-speech', parameters('namePrefix'))]",
+      "metadata": {
+        "description": "Speech Services name"
+      }
+    },
+    "speechServicesSubdomain": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Speech Services custom subdomain (required for Voice Live API)"
+      }
     }
   },
   "variables": {
@@ -110,7 +145,7 @@
     {
       "condition": "[not(empty(parameters('appInsightsName')))]",
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-appinsights-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -135,8 +170,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "12674801899205957444"
+              "version": "0.39.26.7824",
+              "templateHash": "13491123208991219840"
             }
           },
           "parameters": {
@@ -197,31 +232,31 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]",
               "metadata": {
                 "description": "Application Insights resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('appInsightsName')]",
               "metadata": {
                 "description": "Application Insights name"
-              }
+              },
+              "value": "[parameters('appInsightsName')]"
             },
             "instrumentationKey": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').InstrumentationKey]",
               "metadata": {
                 "description": "Instrumentation key"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').InstrumentationKey]"
             },
             "connectionString": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').ConnectionString]",
               "metadata": {
                 "description": "Connection string"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appInsightsName')), '2020-02-02').ConnectionString]"
             }
           }
         }
@@ -232,7 +267,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -266,15 +301,15 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "11196217057371732810"
+              "version": "0.39.26.7824",
+              "templateHash": "18362494536206703211"
             }
           },
           "parameters": {
             "kvName": {
               "type": "string",
-              "maxLength": 24,
               "minLength": 3,
+              "maxLength": 24,
               "metadata": {
                 "description": "Key Vault name (3-24 alphanumeric and hyphens)"
               }
@@ -302,8 +337,8 @@
             "softDeleteRetentionInDays": {
               "type": "int",
               "defaultValue": 90,
-              "maxValue": 90,
               "minValue": 7,
+              "maxValue": 90,
               "metadata": {
                 "description": "Soft delete retention in days"
               }
@@ -355,24 +390,24 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('kvName'))]",
               "metadata": {
                 "description": "Key Vault resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('kvName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('kvName')]",
               "metadata": {
                 "description": "Key Vault name"
-              }
+              },
+              "value": "[parameters('kvName')]"
             },
             "vaultUri": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('kvName')), '2023-07-01').vaultUri]",
               "metadata": {
                 "description": "Key Vault URI"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('kvName')), '2023-07-01').vaultUri]"
             }
           }
         }
@@ -383,7 +418,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -414,15 +449,15 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "2480870328172997210"
+              "version": "0.39.26.7824",
+              "templateHash": "758419217071972511"
             }
           },
           "parameters": {
             "storageName": {
               "type": "string",
-              "maxLength": 24,
               "minLength": 3,
+              "maxLength": 24,
               "metadata": {
                 "description": "Storage account name (3-24 lowercase alphanumeric characters)"
               }
@@ -483,7 +518,7 @@
           "resources": [
             {
               "copy": {
-                "name": "containers",
+                "name": "storageAccount::blobService::containers",
                 "count": "[length(parameters('containerNames'))]"
               },
               "condition": "[parameters('createContainers')]",
@@ -544,24 +579,24 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]",
               "metadata": {
                 "description": "Storage account resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('storageName')]",
               "metadata": {
                 "description": "Storage account name"
-              }
+              },
+              "value": "[parameters('storageName')]"
             },
             "primaryEndpoints": {
               "type": "object",
-              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2023-05-01').primaryEndpoints]",
               "metadata": {
                 "description": "Primary endpoints"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('storageName')), '2023-05-01').primaryEndpoints]"
             }
           }
         }
@@ -572,7 +607,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -604,8 +639,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "8428233981247299251"
+              "version": "0.39.26.7824",
+              "templateHash": "4965752267538006713"
             }
           },
           "parameters": {
@@ -724,38 +759,246 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]",
               "metadata": {
                 "description": "AI Services resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('aiServicesName')]",
               "metadata": {
                 "description": "AI Services name"
-              }
+              },
+              "value": "[parameters('aiServicesName')]"
             },
             "endpoint": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview').endpoint]",
               "metadata": {
                 "description": "AI Services endpoint"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview').endpoint]"
             },
             "principalId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview', 'full').identity.principalId]",
               "metadata": {
                 "description": "System-assigned managed identity principal ID"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview', 'full').identity.principalId]"
             },
             "primaryKey": {
               "type": "string",
-              "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview').key1]",
               "metadata": {
                 "description": "AI Services primary key (for legacy scenarios - use Azure AD when possible)"
+              },
+              "value": "[listKeys(resourceId('Microsoft.CognitiveServices/accounts', parameters('aiServicesName')), '2024-04-01-preview').key1]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('deploySpeechServices')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('deploy-speech-services-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "speechServicesName": {
+            "value": "[parameters('speechServicesName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[variables('mergedTags')]"
+          },
+          "skuName": {
+            "value": "S0"
+          },
+          "customSubDomainName": "[if(not(empty(parameters('speechServicesSubdomain'))), createObject('value', parameters('speechServicesSubdomain')), createObject('value', parameters('speechServicesName')))]",
+          "publicNetworkAccess": {
+            "value": "Enabled"
+          },
+          "disableLocalAuth": {
+            "value": "[equals(parameters('connectionAuthType'), 'AAD')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "3216932227305895243"
+            }
+          },
+          "parameters": {
+            "speechServicesName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Speech Services resource"
               }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure region for the Speech Services"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags"
+              }
+            },
+            "skuName": {
+              "type": "string",
+              "defaultValue": "S0",
+              "allowedValues": [
+                "F0",
+                "S0"
+              ],
+              "metadata": {
+                "description": "SKU name for the Speech Services"
+              }
+            },
+            "customSubDomainName": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Custom subdomain name for token-based authentication (required for Voice Live API)"
+              }
+            },
+            "publicNetworkAccess": {
+              "type": "string",
+              "defaultValue": "Enabled",
+              "allowedValues": [
+                "Enabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "Enable public network access"
+              }
+            },
+            "disableLocalAuth": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Disable local authentication (API key) - use AAD only"
+              }
+            },
+            "dynamicThrottlingEnabled": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "Enable dynamic throttling"
+              }
+            },
+            "networkAclsDefaultAction": {
+              "type": "string",
+              "defaultValue": "Allow",
+              "allowedValues": [
+                "Allow",
+                "Deny"
+              ],
+              "metadata": {
+                "description": "Network ACLs default action"
+              }
+            },
+            "ipRules": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "List of allowed IP rules (CIDR notation)"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2024-10-01",
+              "name": "[parameters('speechServicesName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "SpeechServices",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "[parameters('skuName')]"
+              },
+              "properties": {
+                "customSubDomainName": "[if(not(empty(parameters('customSubDomainName'))), parameters('customSubDomainName'), parameters('speechServicesName'))]",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "disableLocalAuth": "[parameters('disableLocalAuth')]",
+                "dynamicThrottlingEnabled": "[parameters('dynamicThrottlingEnabled')]",
+                "networkAcls": {
+                  "copy": [
+                    {
+                      "name": "ipRules",
+                      "count": "[length(parameters('ipRules'))]",
+                      "input": {
+                        "value": "[parameters('ipRules')[copyIndex('ipRules')]]"
+                      }
+                    }
+                  ],
+                  "defaultAction": "[parameters('networkAclsDefaultAction')]"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "metadata": {
+                "description": "Speech Services resource ID"
+              },
+              "value": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('speechServicesName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Speech Services resource name"
+              },
+              "value": "[parameters('speechServicesName')]"
+            },
+            "endpoint": {
+              "type": "string",
+              "metadata": {
+                "description": "Speech Services endpoint"
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('speechServicesName')), '2024-10-01').endpoint]"
+            },
+            "endpoints": {
+              "type": "object",
+              "metadata": {
+                "description": "Speech Services endpoints (all)"
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('speechServicesName')), '2024-10-01').endpoints]"
+            },
+            "principalId": {
+              "type": "string",
+              "metadata": {
+                "description": "System-assigned managed identity principal ID"
+              },
+              "value": "[reference(resourceId('Microsoft.CognitiveServices/accounts', parameters('speechServicesName')), '2024-10-01', 'full').identity.principalId]"
+            },
+            "region": {
+              "type": "string",
+              "metadata": {
+                "description": "Speech Services region"
+              },
+              "value": "[parameters('location')]"
             }
           }
         }
@@ -766,7 +1009,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -785,22 +1028,22 @@
             "value": "[variables('mergedTags')]"
           },
           "keyVaultId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           },
           "storageAccountId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           },
           "applicationInsightsId": {
-            "value": "[coalesce(tryGet(tryGet(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-appinsights-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01'), 'outputs'), 'id', 'value'), '')]"
+            "value": "[coalesce(tryGet(tryGet(tryGet(if(not(empty(parameters('appInsightsName'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-appinsights-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'id'), 'value'), '')]"
           },
           "aiServicesName": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.name.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.name.value]"
           },
           "aiServicesId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           },
           "aiServicesEndpoint": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.endpoint.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.endpoint.value]"
           },
           "connectionAuthType": {
             "value": "[parameters('connectionAuthType')]"
@@ -818,8 +1061,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "2408855499061086957"
+              "version": "0.39.26.7824",
+              "templateHash": "7544718883159307101"
             }
           },
           "parameters": {
@@ -959,31 +1202,31 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName'))]",
               "metadata": {
                 "description": "Foundry hub resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('foundryName')]",
               "metadata": {
                 "description": "Foundry hub name"
-              }
+              },
+              "value": "[parameters('foundryName')]"
             },
             "principalId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview', 'full').identity.principalId]",
               "metadata": {
                 "description": "System-assigned managed identity principal ID"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview', 'full').identity.principalId]"
             },
             "discoveryUrl": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview').discoveryUrl]",
               "metadata": {
                 "description": "Foundry hub discovery URL"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('foundryName')), '2024-04-01-preview').discoveryUrl]"
             }
           }
         }
@@ -998,7 +1241,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('assign-kv-role-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -1008,7 +1251,7 @@
         "mode": "Incremental",
         "parameters": {
           "principalId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.principalId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.principalId.value]"
           },
           "roleDefinitionId": {
             "value": "4633458b-17de-408a-b874-0445c86b69e6"
@@ -1017,7 +1260,7 @@
             "value": "ServicePrincipal"
           },
           "resourceId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           }
         },
         "template": {
@@ -1026,8 +1269,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "7781765435349682441"
+              "version": "0.39.26.7824",
+              "templateHash": "3792434434173423690"
             }
           },
           "parameters": {
@@ -1109,10 +1352,10 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]",
               "metadata": {
                 "description": "Role assignment ID"
-              }
+              },
+              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]"
             }
           }
         }
@@ -1125,7 +1368,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('assign-storage-role-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -1135,7 +1378,7 @@
         "mode": "Incremental",
         "parameters": {
           "principalId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.principalId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.principalId.value]"
           },
           "roleDefinitionId": {
             "value": "ba92f5b4-2d11-453d-a403-e96b0029c9fe"
@@ -1144,7 +1387,7 @@
             "value": "ServicePrincipal"
           },
           "resourceId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           }
         },
         "template": {
@@ -1153,8 +1396,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "7781765435349682441"
+              "version": "0.39.26.7824",
+              "templateHash": "3792434434173423690"
             }
           },
           "parameters": {
@@ -1236,10 +1479,10 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]",
               "metadata": {
                 "description": "Role assignment ID"
-              }
+              },
+              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]"
             }
           }
         }
@@ -1252,7 +1495,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('assign-aiservices-role-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -1262,7 +1505,7 @@
         "mode": "Incremental",
         "parameters": {
           "principalId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.principalId.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.principalId.value]"
           },
           "roleDefinitionId": {
             "value": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd"
@@ -1271,7 +1514,7 @@
             "value": "ServicePrincipal"
           },
           "resourceId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           }
         },
         "template": {
@@ -1280,8 +1523,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "7781765435349682441"
+              "version": "0.39.26.7824",
+              "templateHash": "3792434434173423690"
             }
           },
           "parameters": {
@@ -1363,10 +1606,10 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]",
               "metadata": {
                 "description": "Role assignment ID"
-              }
+              },
+              "value": "[if(equals(variables('resourceType'), 'Microsoft.KeyVault/vaults'), extensionResourceId(resourceId('Microsoft.KeyVault/vaults', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))), extensionResourceId(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), 'Microsoft.Authorization/roleAssignments', guid(parameters('resourceId'), parameters('principalId'), parameters('roleDefinitionId'))))]"
             }
           }
         }
@@ -1383,7 +1626,7 @@
         "count": "[length(parameters('projects'))]"
       },
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-10-01",
+      "apiVersion": "2025-04-01",
       "name": "[format('deploy-project-{0}-{1}', parameters('projects')[copyIndex()].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(copyIndex())))]",
       "resourceGroup": "[parameters('resourceGroupName')]",
       "properties": {
@@ -1402,7 +1645,7 @@
             "value": "[variables('mergedTags')]"
           },
           "hubId": {
-            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]"
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
           },
           "friendlyName": {
             "value": "[parameters('projects')[copyIndex()].name]"
@@ -1417,8 +1660,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.15.31.15270",
-              "templateHash": "6447861497824427093"
+              "version": "0.39.26.7824",
+              "templateHash": "6140323616250787999"
             }
           },
           "parameters": {
@@ -1484,31 +1727,31 @@
           "outputs": {
             "id": {
               "type": "string",
-              "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName'))]",
               "metadata": {
                 "description": "Project resource ID"
-              }
+              },
+              "value": "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName'))]"
             },
             "name": {
               "type": "string",
-              "value": "[parameters('projectName')]",
               "metadata": {
                 "description": "Project name"
-              }
+              },
+              "value": "[parameters('projectName')]"
             },
             "principalId": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview', 'full').identity.principalId]",
               "metadata": {
                 "description": "System-assigned managed identity principal ID"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview', 'full').identity.principalId]"
             },
             "discoveryUrl": {
               "type": "string",
-              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview').discoveryUrl]",
               "metadata": {
                 "description": "Project discovery URL"
-              }
+              },
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces', parameters('projectName')), '2024-04-01-preview').discoveryUrl]"
             }
           }
         }
@@ -1517,98 +1760,291 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')))))]",
         "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
       ]
+    },
+    {
+      "condition": "[and(parameters('deployServiceNowAgent'), greater(length(parameters('projects')), 0))]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "[format('deploy-servicenow-agent-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))]",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "capabilityHostName": {
+            "value": "ServiceNowAgent"
+          },
+          "projectWorkspaceName": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-project-{0}-{1}', parameters('projects')[0].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(0)))), '2025-04-01').outputs.name.value]"
+          },
+          "agentDescription": {
+            "value": "[parameters('serviceNowAgentDescription')]"
+          },
+          "capabilityHostKind": {
+            "value": "Agents"
+          },
+          "tags": {
+            "value": "[variables('mergedTags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "595844433999225595"
+            }
+          },
+          "parameters": {
+            "capabilityHostName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the capability host (e.g., ServiceNowAgent)"
+              }
+            },
+            "projectWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "The parent Foundry project workspace name"
+              }
+            },
+            "agentDescription": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Description of the AI Agent capability host"
+              }
+            },
+            "capabilityHostKind": {
+              "type": "string",
+              "defaultValue": "Agents",
+              "allowedValues": [
+                "Agents"
+              ],
+              "metadata": {
+                "description": "Kind of capability host - currently only Agents is supported"
+              }
+            },
+            "aiServicesConnections": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "List of AI Services connection names for the agent to use"
+              }
+            },
+            "storageConnections": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "List of Storage connection names for agent file storage"
+              }
+            },
+            "threadStorageConnections": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "List of Thread storage connection names for conversation history"
+              }
+            },
+            "vectorStoreConnections": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "List of Vector Store connection names for knowledge retrieval"
+              }
+            },
+            "customerSubnet": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Customer subnet resource ID for network isolation (optional)"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Resource tags"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.MachineLearningServices/workspaces/capabilityHosts",
+              "apiVersion": "2025-01-01-preview",
+              "name": "[format('{0}/{1}', parameters('projectWorkspaceName'), parameters('capabilityHostName'))]",
+              "properties": {
+                "capabilityHostKind": "[parameters('capabilityHostKind')]",
+                "description": "[if(not(empty(parameters('agentDescription'))), parameters('agentDescription'), format('AI Agent capability host: {0}', parameters('capabilityHostName')))]",
+                "aiServicesConnections": "[parameters('aiServicesConnections')]",
+                "storageConnections": "[parameters('storageConnections')]",
+                "threadStorageConnections": "[parameters('threadStorageConnections')]",
+                "vectorStoreConnections": "[parameters('vectorStoreConnections')]",
+                "customerSubnet": "[if(not(empty(parameters('customerSubnet'))), parameters('customerSubnet'), null())]",
+                "tags": "[parameters('tags')]"
+              }
+            }
+          ],
+          "outputs": {
+            "id": {
+              "type": "string",
+              "metadata": {
+                "description": "Capability Host resource ID"
+              },
+              "value": "[resourceId('Microsoft.MachineLearningServices/workspaces/capabilityHosts', parameters('projectWorkspaceName'), parameters('capabilityHostName'))]"
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Capability Host name"
+              },
+              "value": "[parameters('capabilityHostName')]"
+            },
+            "provisioningState": {
+              "type": "string",
+              "metadata": {
+                "description": "Provisioning state of the capability host"
+              },
+              "value": "[reference(resourceId('Microsoft.MachineLearningServices/workspaces/capabilityHosts', parameters('projectWorkspaceName'), parameters('capabilityHostName')), '2025-01-01-preview').provisioningState]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "foundryProjects",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
     }
   ],
   "outputs": {
     "resourceGroupName": {
       "type": "string",
-      "value": "[parameters('resourceGroupName')]",
       "metadata": {
         "description": "Resource Group name"
-      }
+      },
+      "value": "[parameters('resourceGroupName')]"
     },
     "foundryHubId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]",
       "metadata": {
         "description": "Foundry Hub ID"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
     },
     "foundryHubName": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.name.value]",
       "metadata": {
         "description": "Foundry Hub name"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.name.value]"
     },
     "foundryHubPrincipalId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.principalId.value]",
       "metadata": {
         "description": "Foundry Hub principal ID"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-foundry-hub-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.principalId.value]"
     },
     "aiServicesId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]",
       "metadata": {
         "description": "AI Services ID"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
     },
     "aiServicesName": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.name.value]",
       "metadata": {
         "description": "AI Services name"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.name.value]"
     },
     "aiServicesEndpoint": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.endpoint.value]",
       "metadata": {
         "description": "AI Services endpoint"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-aiservices-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.endpoint.value]"
     },
     "appInsightsId": {
       "type": "string",
-      "value": "[coalesce(tryGet(tryGet(reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-appinsights-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01'), 'outputs'), 'id', 'value'), '')]",
       "metadata": {
         "description": "Application Insights ID"
-      }
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(not(empty(parameters('appInsightsName'))), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-appinsights-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'id'), 'value'), '')]"
     },
     "keyVaultId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]",
       "metadata": {
         "description": "Key Vault ID"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-keyvault-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
     },
     "storageAccountId": {
       "type": "string",
-      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2020-10-01').outputs.id.value]",
       "metadata": {
         "description": "Storage Account ID"
-      }
+      },
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-storage-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01').outputs.id.value]"
     },
     "projectIds": {
       "type": "array",
-      "copy": {
-        "count": "[length(parameters('projects'))]",
-        "input": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-project-{0}-{1}', parameters('projects')[copyIndex()].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(copyIndex())))), '2020-10-01').outputs.id.value]"
-      },
       "metadata": {
         "description": "Project IDs"
+      },
+      "copy": {
+        "count": "[length(parameters('projects'))]",
+        "input": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-project-{0}-{1}', parameters('projects')[copyIndex()].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(copyIndex())))), '2025-04-01').outputs.id.value]"
       }
     },
     "projectNames": {
       "type": "array",
-      "copy": {
-        "count": "[length(parameters('projects'))]",
-        "input": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-project-{0}-{1}', parameters('projects')[copyIndex()].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(copyIndex())))), '2020-10-01').outputs.name.value]"
-      },
       "metadata": {
         "description": "Project names"
+      },
+      "copy": {
+        "count": "[length(parameters('projects'))]",
+        "input": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-project-{0}-{1}', parameters('projects')[copyIndex()].name, uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName')), string(copyIndex())))), '2025-04-01').outputs.name.value]"
       }
+    },
+    "serviceNowAgentId": {
+      "type": "string",
+      "metadata": {
+        "description": "ServiceNow Agent Capability Host ID"
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(and(parameters('deployServiceNowAgent'), greater(length(parameters('projects')), 0)), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-servicenow-agent-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'id'), 'value'), '')]"
+    },
+    "serviceNowAgentName": {
+      "type": "string",
+      "metadata": {
+        "description": "ServiceNow Agent Capability Host name"
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(and(parameters('deployServiceNowAgent'), greater(length(parameters('projects')), 0)), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-servicenow-agent-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'name'), 'value'), '')]"
+    },
+    "speechServicesId": {
+      "type": "string",
+      "metadata": {
+        "description": "Speech Services ID"
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(parameters('deploySpeechServices'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-speech-services-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'id'), 'value'), '')]"
+    },
+    "speechServicesName": {
+      "type": "string",
+      "metadata": {
+        "description": "Speech Services name"
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(parameters('deploySpeechServices'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-speech-services-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'name'), 'value'), '')]"
+    },
+    "speechServicesEndpoint": {
+      "type": "string",
+      "metadata": {
+        "description": "Speech Services endpoint (Voice Live API)"
+      },
+      "value": "[coalesce(tryGet(tryGet(tryGet(if(parameters('deploySpeechServices'), reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', format('deploy-speech-services-{0}', uniqueString(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))))), '2025-04-01'), null()), 'outputs'), 'endpoint'), 'value'), '')]"
     }
   }
 }

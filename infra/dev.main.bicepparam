@@ -20,13 +20,13 @@ param projects = [
   }
 ]
 
-param kvName = 'devaifkv001'
-param storageName = 'devaifstorage001'
+param kvName = 'devaifkv2026b'
+param storageName = 'devaifstor2026b'
 param resourceGroupName = 'dev-aif-foundry-rg'
 
 // AI Services Configuration
-param aiServicesName = 'devaifaiservices001'
-param aiServicesSubdomain = 'devaifaiservices001'
+param aiServicesName = 'devaifaisvc2026b'
+param aiServicesSubdomain = 'devaifaisvc2026b'
 param connectionAuthType = 'AAD'
 
 // OpenAI Model Deployments
@@ -56,4 +56,14 @@ param aiServicesDeployments = [
 ]
 
 // Application Insights
-param appInsightsName = 'devaifappinsights001'
+param appInsightsName = 'devaifappins2026b'
+
+// Speech Services with Voice Live API
+param deploySpeechServices = true
+param speechServicesName = 'devaifspeech2026b'
+param speechServicesSubdomain = 'devaifspeech2026b'
+
+// NOTE: AI Agents use Basic Agent Setup (Microsoft-managed infrastructure)
+// Create agents via Azure AI Foundry portal or SDK - no Bicep deployment needed
+// Microsoft automatically manages Cosmos DB, AI Search, and Storage for agents
+// See: https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/capability-hosts

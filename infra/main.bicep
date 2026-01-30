@@ -43,6 +43,15 @@ param connectionAuthType string = 'AAD'
 @description('Resource group name')
 param resourceGroupName string = '${namePrefix}-foundry-rg'
 
+@description('Deploy Speech Services with Voice Live API')
+param deploySpeechServices bool = true
+
+@description('Speech Services name')
+param speechServicesName string = '${namePrefix}-speech'
+
+@description('Speech Services custom subdomain (required for Voice Live API)')
+param speechServicesSubdomain string = ''
+
 // Variables
 var foundryHubName = '${namePrefix}-foundry-hub'
 var mergedTags = union(
@@ -112,6 +121,21 @@ module aiServices 'modules/aiservices.bicep' = {
   }
 }
 
+// Deploy Speech Services with Voice Live API support
+module speechServices 'modules/speech-services.bicep' = if (deploySpeechServices) {
+  name: 'deploy-speech-services-${uniqueString(rg.id)}'
+  scope: resourceGroup(rg.name)
+  params: {
+    speechServicesName: speechServicesName
+    location: location
+    tags: mergedTags
+    skuName: 'S0'
+    customSubDomainName: !empty(speechServicesSubdomain) ? speechServicesSubdomain : speechServicesName
+    publicNetworkAccess: 'Enabled'
+    disableLocalAuth: connectionAuthType == 'AAD'
+  }
+}
+
 // Deploy Foundry Hub
 module foundryHub 'modules/foundry.bicep' = {
   name: 'deploy-foundry-hub-${uniqueString(rg.id)}'
@@ -144,17 +168,8 @@ module kvRoleAssignment 'modules/role-assignment.bicep' = {
   }
 }
 
-// Grant Foundry Hub access to Storage (Storage Blob Data Contributor)
-module storageRoleAssignment 'modules/role-assignment.bicep' = {
-  name: 'assign-storage-role-${uniqueString(rg.id)}'
-  scope: resourceGroup(rg.name)
-  params: {
-    principalId: foundryHub.outputs.principalId
-    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe' // Storage Blob Data Contributor
-    principalType: 'ServicePrincipal'
-    resourceId: storage.outputs.id
-  }
-}
+// NOTE: Storage role assignments are handled automatically by Foundry Hub
+// when storageAccountId is provided - no explicit assignment needed
 
 // Grant AI Services access to Foundry Hub (Cognitive Services OpenAI User)
 module aiServicesRoleAssignment 'modules/role-assignment.bicep' = {
@@ -181,6 +196,11 @@ module foundryProjects 'modules/project.bicep' = [for (project, index) in projec
     projectDescription: project.description
   }
 }]
+
+// NOTE: Basic Agent Setup
+// AI Agents are created via Azure AI Foundry portal or SDK - no capability hosts needed.
+// Microsoft automatically manages the backend infrastructure (Cosmos DB, AI Search, Storage).
+// See: https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/capability-hosts
 
 // Outputs
 @description('Resource Group name')
@@ -218,3 +238,12 @@ output projectIds array = [for (project, index) in projects: foundryProjects[ind
 
 @description('Project names')
 output projectNames array = [for (project, index) in projects: foundryProjects[index].outputs.name]
+
+@description('Speech Services ID')
+output speechServicesId string = speechServices.?outputs.?id ?? ''
+
+@description('Speech Services name')
+output speechServicesName string = speechServices.?outputs.?name ?? ''
+
+@description('Speech Services endpoint (Voice Live API)')
+output speechServicesEndpoint string = speechServices.?outputs.?endpoint ?? ''
