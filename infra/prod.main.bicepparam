@@ -78,5 +78,8 @@ param deploySpeechServices = true
 param speechServicesName = 'prodaifspeech001'
 param speechServicesSubdomain = 'prodaifspeech001'
 
+// Role Assignments - set to true if service principal has Owner/User Access Administrator role
+param deployRoleAssignments = false
+
 // NOTE: AI Agents use Basic Agent Setup (Microsoft-managed infrastructure)
 // Create agents via Azure AI Foundry portal or SDK - no Bicep deployment needed

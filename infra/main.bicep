@@ -52,6 +52,9 @@ param speechServicesName string = '${namePrefix}-speech'
 @description('Speech Services custom subdomain (required for Voice Live API)')
 param speechServicesSubdomain string = ''
 
+@description('Deploy role assignments (requires Owner or User Access Administrator role)')
+param deployRoleAssignments bool = false
+
 // Variables
 var foundryHubName = '${namePrefix}-foundry-hub'
 var mergedTags = union(
@@ -157,7 +160,8 @@ module foundryHub 'modules/foundry.bicep' = {
 }
 
 // Grant Foundry Hub access to Key Vault (Key Vault Secrets User)
-module kvRoleAssignment 'modules/role-assignment.bicep' = {
+// Requires Owner or User Access Administrator role on the resource group
+module kvRoleAssignment 'modules/role-assignment.bicep' = if (deployRoleAssignments) {
   name: 'assign-kv-role-${uniqueString(rg.id)}'
   scope: resourceGroup(rg.name)
   params: {
@@ -172,7 +176,8 @@ module kvRoleAssignment 'modules/role-assignment.bicep' = {
 // when storageAccountId is provided - no explicit assignment needed
 
 // Grant AI Services access to Foundry Hub (Cognitive Services OpenAI User)
-module aiServicesRoleAssignment 'modules/role-assignment.bicep' = {
+// Requires Owner or User Access Administrator role on the resource group
+module aiServicesRoleAssignment 'modules/role-assignment.bicep' = if (deployRoleAssignments) {
   name: 'assign-aiservices-role-${uniqueString(rg.id)}'
   scope: resourceGroup(rg.name)
   params: {
