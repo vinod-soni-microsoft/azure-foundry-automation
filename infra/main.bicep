@@ -92,8 +92,8 @@ module keyVault 'modules/kv.bicep' = {
     location: location
     tags: mergedTags
     enableRbacAuthorization: true
-    enablePurgeProtection: false  // Disabled to allow purging
-    softDeleteRetentionInDays: 7  // Minimum allowed value
+    enablePurgeProtection: true   // Must match existing vault
+    softDeleteRetentionInDays: 90 // Must match existing vault
   }
 }
 
