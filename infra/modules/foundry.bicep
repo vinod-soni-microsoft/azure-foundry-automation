@@ -70,21 +70,36 @@ resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2024-04-01-pre
     }
   }
 
-  // AI Services Connection (child resource)
-  resource aiServicesConnection 'connections@2024-04-01-preview' = {
+  // AI Services Connection with AAD authentication
+  resource aiServicesConnectionAAD 'connections@2024-04-01-preview' = if (connectionAuthType == 'AAD') {
     name: toLower('${aiServicesName}-connection')
     properties: {
       category: 'AIServices'
       target: aiServicesEndpoint
-      authType: connectionAuthType
+      authType: 'AAD'
       isSharedToAll: true
       metadata: {
         ApiType: 'Azure'
         ResourceId: aiServicesId
       }
-      credentials: connectionAuthType == 'ApiKey' ? {
+    }
+  }
+
+  // AI Services Connection with API Key authentication
+  resource aiServicesConnectionApiKey 'connections@2024-04-01-preview' = if (connectionAuthType == 'ApiKey') {
+    name: toLower('${aiServicesName}-connection')
+    properties: {
+      category: 'AIServices'
+      target: aiServicesEndpoint
+      authType: 'ApiKey'
+      isSharedToAll: true
+      metadata: {
+        ApiType: 'Azure'
+        ResourceId: aiServicesId
+      }
+      credentials: {
         key: aiServices.listKeys().key1
-      } : null
+      }
     }
   }
 }

@@ -85,5 +85,5 @@ output endpoint string = aiServices.properties.endpoint
 @description('System-assigned managed identity principal ID')
 output principalId string = aiServices.identity.principalId
 
-@description('AI Services primary key (for legacy scenarios - use Azure AD when possible)')
-output primaryKey string = aiServices.listKeys().key1
+// NOTE: API key output removed - use Azure AD authentication instead
+// If API key is needed, retrieve it via Azure CLI: az cognitiveservices account keys list
